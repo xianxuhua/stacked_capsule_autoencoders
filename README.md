@@ -13,7 +13,7 @@ This is a Tensorflow implementation of the Stacked Capsule Autoencoder (SCAE), w
 This work was done during Adam's internship at Google Brain in Toronto.
 
 ## About the project
-If you look at natural images containing objects, you will quickly see that the same object can be captured from various viewpoints. Capsule Networks are specifically designed to be robust to viewpoint changes, which makes learning more data-efficient and allows better generalization to unseen viewpoints. This project introduces a novel unsupervised version of Capsule Networks called Stacked Capsule Autoencoders (SCAE). Unlike in the original Capsules, SCAE is a generative model with an affine-aware decoder. This forces the encoder to learn image representation that is equivariant to viewpoint changes, and which leads to state-of-the-art unsupervised classification performance on MNIST and SVHN. For a more detailed description please have a look [at the paper](https://arxiv.org/abs/1906.06818) or at [Adam's blog](http://akosiorek.github.io/ml/2019/06/23/html).
+If you look at natural images containing objects, you will quickly see that the same object can be captured from various viewpoints. Capsule Networks are specifically designed to be robust to viewpoint changes, which makes learning more data-efficient and allows better generalization to unseen viewpoints. This project introduces a novel unsupervised version of Capsule Networks called Stacked Capsule Autoencoders (SCAE). Unlike in the original Capsules, SCAE is a generative model with an affine-aware decoder. This forces the encoder to learn image representation that is equivariant to viewpoint changes, and which leads to state-of-the-art unsupervised classification performance on MNIST and SVHN. For a more detailed description please have a look [at the paper](https://arxiv.org/abs/1906.06818) or at [Adam's blog](http://akosiorek.github.io/ml/2019/06/23/stacked_capsule_autoencoders.html).
 
 
 <p align="center">
@@ -82,6 +82,8 @@ You can also pass command line arguments to the above scripts. For example,
  Model snapshots, tensorboard logs and intermediate plots (needs passing `--plot=True`) will be stored in `{logdir}/{name}` directory where `logdir` and `name` can be set as command-line arguments. `logdir` defaults to `google-research/stacked_capsule_autoencoders/checkpoints`.
 
 ## Evaluation
+You can get pretrain model from here: [link](https://drive.google.com/drive/folders/1rcH228CZvQUpF4W4KbXG9rqIPZoyAXA3?usp=sharing)
+
 You can use the `eval_mnist_model.py` script to evaluate a trained (on MNIST) model snapshot. To do so, you need to invoke the script with the same command-line arguments you used to train the model. We provide `eval_mnist.sh` and `eval_mnist_coupled.sh` for evaluating snapshots produced by `run_mnist.sh` and `run_mnist_coupeld.sh`. Invoking this script will load the model snapshot and report linear classification accuracy, unsupervised classification accuracy (clustering + bipartite graph matching), and also produce a TSNE plot of capsule probabilities. The plot will be stored in the checkpoint directory.
 
 ## Citation
