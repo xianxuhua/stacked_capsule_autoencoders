@@ -13,7 +13,7 @@ This is a Tensorflow implementation of the Stacked Capsule Autoencoder (SCAE), w
 This work was done during Adam's internship at Google Brain in Toronto.
 
 ## About the project
-If you look at natural images containing objects, you will quickly see that the same object can be captured from various viewpoints. Capsule Networks are specifically designed to be robust to viewpoint changes, which makes learning more data-efficient and allows better generalization to unseen viewpoints. This project introduces a novel unsupervised version of Capsule Networks called Stacked Capsule Autoencoders (SCAE). Unlike in the original Capsules, SCAE is a generative model with an affine-aware decoder. This forces the encoder to learn image representation that is equivariant to viewpoint changes, and which leads to state-of-the-art unsupervised classification performance on MNIST and SVHN. For a more detailed description please have a look [at the paper](https://arxiv.org/abs/1906.06818) or at [Adam's blog](http://akosiorek.github.io/ml/2019/06/23/stacked_capsule_autoencoders.html).
+If you look at natural images containing objects, you will quickly see that the same object can be captured from various viewpoints. Capsule Networks are specifically designed to be robust to viewpoint changes, which makes learning more data-efficient and allows better generalization to unseen viewpoints. This project introduces a novel unsupervised version of Capsule Networks called Stacked Capsule Autoencoders (SCAE). Unlike in the original Capsules, SCAE is a generative model with an affine-aware decoder. This forces the encoder to learn image representation that is equivariant to viewpoint changes, and which leads to state-of-the-art unsupervised classification performance on MNIST and SVHN. For a more detailed description please have a look [at the paper](https://arxiv.org/abs/1906.06818) or at [Adam's blog](http://akosiorek.github.io/ml/2019/06/23/html).
 
 
 <p align="center">
@@ -49,10 +49,21 @@ The current implementation is not compatible with `tensorflow`==2.0.
 
 
 ## Running Experiments
-You can train the model by invoking:
+how to run tf1.15 on cuda11?
 
-    # From ../
-    python -m stacked_capsule_autoencoders.scripts.train --name=experiment_name
+You can get the Container Version from here: [link](https://docs.nvidia.com/deeplearning/frameworks/tensorflow-release-notes/rel_22-04.html#rel_22-04)
+
+example:
+
+    sudo docker pull nvcr.io/nvidia/tensorflow:21.07-tf1-py3
+    sudo docker run --gpus all -d -it --name=tf1.15-cuda11.4 nvcr.io/nvidia/tensorflow:21.07-tf1-py3
+    sudo docker cp stacked_capsule_autoencoders tf1.15-cuda11.4:/workspace
+    sudo docker attach tf1.15-cuda11.4
+
+You can train the model by invoking:
+    
+    pip install -r requirements.txt
+    ./run_mnist.sh
 
 Different model configurations and datasets can be chosen by command-line flags. For an overview of the flags, have a look at the top of the training script (`train.py`) and the top of model and data configs in `capsules/configs`.
 

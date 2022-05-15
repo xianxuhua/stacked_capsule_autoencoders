@@ -24,14 +24,14 @@ import sonnet as snt
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from stacked_capsule_autoencoders.capsules import capsule as _capsule
-from stacked_capsule_autoencoders.capsules import math_ops
-from stacked_capsule_autoencoders.capsules import plot
-from stacked_capsule_autoencoders.capsules import probe
-from stacked_capsule_autoencoders.capsules import tensor_ops
-from stacked_capsule_autoencoders.capsules.data import preprocess
-from stacked_capsule_autoencoders.capsules.models import Model
-from stacked_capsule_autoencoders.capsules.tensor_ops import make_brodcastable
+from capsules import capsule as _capsule
+from capsules import math_ops
+from capsules import plot
+from capsules import probe
+from capsules import tensor_ops
+from capsules.data import preprocess
+from capsules.models import Model
+from capsules.tensor_ops import make_brodcastable
 
 tfd = tfp.distributions
 

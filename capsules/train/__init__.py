@@ -14,6 +14,6 @@
 # limitations under the License.
 
 """Training utilities."""
-from stacked_capsule_autoencoders.capsules.train.hooks import create_hooks
+from capsules.train.hooks import create_hooks
 
 

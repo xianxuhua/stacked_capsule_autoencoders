@@ -25,11 +25,11 @@ import numpy as np
 import sonnet as snt
 import tensorflow as tf
 
-from stacked_capsule_autoencoders.capsules.tensor_ops import ensure_length
+from capsules.tensor_ops import ensure_length
 
 
 def pad_and_shift(img, output_size, shift=None, pad_kwargs=None):
-  """Pads and shifts the image.
+    """Pads and shifts the image.
 
   Args:
     img: img [H, W, C] or a batch of images [B, H, W, C].
@@ -42,52 +42,52 @@ def pad_and_shift(img, output_size, shift=None, pad_kwargs=None):
     Padded images.
   """
 
-  output_size = ensure_length(output_size, 2)
-  shift = ensure_length(shift, 2)
+    output_size = ensure_length(output_size, 2)
+    shift = ensure_length(shift, 2)
 
-  if img.shape.ndims == 4:
-    func = functools.partial(
-        pad_and_shift,
-        output_size=output_size,
-        shift=shift,
-        pad_kwargs=pad_kwargs)
+    if img.shape.ndims == 4:
+        func = functools.partial(
+            pad_and_shift,
+            output_size=output_size,
+            shift=shift,
+            pad_kwargs=pad_kwargs)
 
-    return tf.map_fn(func, img)
+        return tf.map_fn(func, img)
 
-  for i, z in enumerate(img.shape[:2].as_list()):
-    if shift[i] is None:
-      shift[i] = output_size[i] - z
+    for i, z in enumerate(img.shape[:2].as_list()):
+        if shift[i] is None:
+            shift[i] = output_size[i] - z
 
-  y_shift, x_shift = shift
-  x = tf.random.uniform([], -x_shift, x_shift + 1, dtype=tf.int32)
-  y = tf.random.uniform([], -y_shift, y_shift + 1, dtype=tf.int32)
-  y1, y2 = abs(tf.minimum(y, 0)), tf.maximum(y, 0)
-  x1, x2 = abs(tf.minimum(x, 0)), tf.maximum(x, 0)
+    y_shift, x_shift = shift
+    x = tf.random.uniform([], -x_shift, x_shift + 1, dtype=tf.int32)
+    y = tf.random.uniform([], -y_shift, y_shift + 1, dtype=tf.int32)
+    y1, y2 = abs(tf.minimum(y, 0)), tf.maximum(y, 0)
+    x1, x2 = abs(tf.minimum(x, 0)), tf.maximum(x, 0)
 
-  height, width = output_size
-  h = int(img.shape[0]) + abs(y)
-  y_pad = tf.maximum(height - h, 0)
-  y1 += y_pad // 2 + y_pad % 2
-  y2 += y_pad // 2
+    height, width = output_size
+    h = int(img.shape[0]) + abs(y)
+    y_pad = tf.maximum(height - h, 0)
+    y1 += y_pad // 2 + y_pad % 2
+    y2 += y_pad // 2
 
-  w = int(img.shape[1]) + abs(x)
-  x_pad = tf.maximum(width - w, 0)
-  x1 += x_pad // 2 + x_pad % 2
-  x2 += x_pad // 2
+    w = int(img.shape[1]) + abs(x)
+    x_pad = tf.maximum(width - w, 0)
+    x1 += x_pad // 2 + x_pad % 2
+    x2 += x_pad // 2
 
-  if pad_kwargs is None:
-    pad_kwargs = dict()
+    if pad_kwargs is None:
+        pad_kwargs = dict()
 
-  img = tf.pad(img, [(y1, y2), (x1, x2), (0, 0)], **pad_kwargs)
-  img.set_shape([height, width, img.shape[-1]])
+    img = tf.pad(img, [(y1, y2), (x1, x2), (0, 0)], **pad_kwargs)
+    img.set_shape([height, width, img.shape[-1]])
 
-  return img[:height, :width]
+    return img[:height, :width]
 
 
 def normalized_sobel_edges(img,
                            subtract_median=True,
                            same_number_of_channels=True):
-  """Applies the sobel filter to images and normalizes the result.
+    """Applies the sobel filter to images and normalizes the result.
 
   Args:
     img: tensor of shape [B, H, W, C].
@@ -101,20 +101,20 @@ def normalized_sobel_edges(img,
     else [B, H, W, 2C].
   """
 
-  sobel_img = tf.image.sobel_edges(img)
+    sobel_img = tf.image.sobel_edges(img)
 
-  if same_number_of_channels:
-    sobel_img = tf.reduce_sum(sobel_img, -1)
-  else:
-    n_channels = int(img.shape[-1])
-    sobel_img = tf.reshape(sobel_img,
-                           sobel_img.shape[:-2].concatenate(2 * n_channels))
+    if same_number_of_channels:
+        sobel_img = tf.reduce_sum(sobel_img, -1)
+    else:
+        n_channels = int(img.shape[-1])
+        sobel_img = tf.reshape(sobel_img,
+                               sobel_img.shape[:-2].concatenate(2 * n_channels))
 
-  if subtract_median:
-    sobel_img = abs(sobel_img - contrib_distributions.percentile(
-        sobel_img, 50.0, axis=(1, 2), keep_dims=True))
+    if subtract_median:
+        sobel_img = abs(sobel_img - contrib_distributions.percentile(
+            sobel_img, 50.0, axis=(1, 2), keep_dims=True))
 
-  smax = tf.reduce_max(sobel_img, (1, 2), keepdims=True)
-  smin = tf.reduce_min(sobel_img, (1, 2), keepdims=True)
-  sobel_img = (sobel_img - smin) / (smax - smin + 1e-8)
-  return sobel_img
+    smax = tf.reduce_max(sobel_img, (1, 2), keepdims=True)
+    smin = tf.reduce_min(sobel_img, (1, 2), keepdims=True)
+    sobel_img = (sobel_img - smin) / (smax - smin + 1e-8)
+    return sobel_img

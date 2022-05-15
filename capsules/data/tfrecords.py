@@ -19,35 +19,35 @@ from tensorflow import nest
 
 
 class Dataset(object):
-  """Dataset class for parsing tfrecords files."""
+    """Dataset class for parsing tfrecords files."""
 
-  _feature_description = {
-      'image_raw': tf.FixedLenFeature([], tf.string),
-      'height': tf.FixedLenFeature([], tf.int64),
-      'width': tf.FixedLenFeature([], tf.int64),
-      'depth': tf.FixedLenFeature([], tf.int64),
-      'label': tf.FixedLenFeature([], tf.int64)
-  }
+    _feature_description = {
+        'image_raw': tf.FixedLenFeature([], tf.string),
+        'height': tf.FixedLenFeature([], tf.int64),
+        'width': tf.FixedLenFeature([], tf.int64),
+        'depth': tf.FixedLenFeature([], tf.int64),
+        'label': tf.FixedLenFeature([], tf.int64)
+    }
 
-  def __init__(self, tfrecord_files, img_shape, labeled=False):
-    super(Dataset, self).__init__()
-    self._tfrecords = nest.flatten(tfrecord_files)
-    self._img_shape = img_shape
-    tf.logging.info(tfrecord_files)
-    tf.logging.info(labeled)
-    if labeled:
-      self._feature_description['labeled'] = tf.FixedLenFeature([], tf.int64)
+    def __init__(self, tfrecord_files, img_shape, labeled=False):
+        super(Dataset, self).__init__()
+        self._tfrecords = nest.flatten(tfrecord_files)
+        self._img_shape = img_shape
+        tf.logging.info(tfrecord_files)
+        tf.logging.info(labeled)
+        if labeled:
+            self._feature_description['labeled'] = tf.FixedLenFeature([], tf.int64)
 
-  def __call__(self):
-    ds = tf.data.TFRecordDataset(self._tfrecords)
-    return ds.map(self._parse_example)
+    def __call__(self):
+        ds = tf.data.TFRecordDataset(self._tfrecords)
+        return ds.map(self._parse_example)
 
-  def _parse_example(self, example_proto):
-    d = tf.parse_single_example(example_proto, self._feature_description)
+    def _parse_example(self, example_proto):
+        d = tf.parse_single_example(example_proto, self._feature_description)
 
-    img = tf.decode_raw(d['image_raw'], tf.uint8)
-    img = tf.reshape(img, self._img_shape)
-    d['image'] = tf.to_float(img) / 255.
-    del d['image_raw']
+        img = tf.decode_raw(d['image_raw'], tf.uint8)
+        img = tf.reshape(img, self._img_shape)
+        d['image'] = tf.to_float(img) / 255.
+        del d['image_raw']
 
-    return d
+        return d

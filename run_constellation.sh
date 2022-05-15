@@ -17,8 +17,7 @@
 set -e
 set -x
 
-source stacked_capsule_autoencoders/setup_virtualenv.sh
-python -m stacked_capsule_autoencoders.train\
+python -m train\
   --name=constellation\
   --model=constellation\
   --dataset=constellation\

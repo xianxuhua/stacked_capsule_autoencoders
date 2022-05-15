@@ -16,8 +16,7 @@
 set -e
 set -x
 
-source stacked_capsule_autoencoders/setup_virtualenv.sh
-python -m stacked_capsule_autoencoders.eval_mnist_model\
+python -m eval_mnist_model\
   --snapshot=stacked_capsule_autoencoders/checkpoints/mnist/model.ckpt-300001\
   --canvas_size=40\
   --n_part_caps=40\

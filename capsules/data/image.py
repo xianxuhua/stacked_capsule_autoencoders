@@ -25,8 +25,7 @@ import tensorflow as tf
 from tensorflow import nest
 import tensorflow_datasets as tfds
 
-
-from stacked_capsule_autoencoders.capsules.data import tfrecords as _tfrecords
+from capsules.data import tfrecords as _tfrecords
 
 
 def create(which,
@@ -35,54 +34,53 @@ def create(which,
            n_replicas=1,
            transforms=None,
            **kwargs):
-  """Creates data loaders according to the dataset name `which`."""
+    """Creates data loaders according to the dataset name `which`."""
 
-  func = globals().get('_create_{}'.format(which), None)
-  if func is None:
-    raise ValueError('Dataset "{}" not supported. Only {} are'
-                     ' supported.'.format(which, SUPPORTED_DATSETS))
+    func = globals().get('_create_{}'.format(which), None)
+    if func is None:
+        raise ValueError('Dataset "{}" not supported. Only {} are'
+                         ' supported.'.format(which, SUPPORTED_DATSETS))
 
-  dataset = func(subset, batch_size, **kwargs)
+    dataset = func(subset, batch_size, **kwargs)
 
-  if transforms is not None:
-    if not isinstance(transforms, dict):
-      transforms = {'image': transforms}
+    if transforms is not None:
+        if not isinstance(transforms, dict):
+            transforms = {'image': transforms}
 
-    for k, v in transforms.items():
-      transforms[k] = snt.Sequential(nest.flatten(v))
+        for k, v in transforms.items():
+            transforms[k] = snt.Sequential(nest.flatten(v))
 
-  if transforms is not None or n_replicas > 1:
+    if transforms is not None or n_replicas > 1:
 
-    def map_func(data):
-      """Replicates data if necessary."""
-      data = dict(data)
+        def map_func(data):
+            """Replicates data if necessary."""
+            data = dict(data)
 
-      if n_replicas > 1:
-        tile_by_batch = snt.TileByDim([0], [n_replicas])
-        data = {k: tile_by_batch(v) for k, v in data.items()}
+            if n_replicas > 1:
+                tile_by_batch = snt.TileByDim([0], [n_replicas])
+                data = {k: tile_by_batch(v) for k, v in data.items()}
 
-      if transforms is not None:
-        img = data['image']
+            if transforms is not None:
+                img = data['image']
 
-        for k, transform in transforms.items():
-          data[k] = transform(img)
+                for k, transform in transforms.items():
+                    data[k] = transform(img)
 
-      return data
+            return data
 
-    dataset = dataset.map(map_func)
+        dataset = dataset.map(map_func)
 
-  iter_data = dataset.make_one_shot_iterator()
-  input_batch = iter_data.get_next()
-  for _, v in input_batch.items():
-    v.set_shape([batch_size * n_replicas] + v.shape[1:].as_list())
+    iter_data = dataset.make_one_shot_iterator()
+    input_batch = iter_data.get_next()
+    for _, v in input_batch.items():
+        v.set_shape([batch_size * n_replicas] + v.shape[1:].as_list())
 
-  return input_batch
+    return input_batch
 
 
 def _create_mnist(subset, batch_size, **kwargs):
-  return tfds.load(
-      name='mnist', split=subset, **kwargs).repeat().batch(batch_size)
-
+    return tfds.load(
+        name='mnist', split=subset, **kwargs).repeat().batch(batch_size)
 
 
 SUPPORTED_DATSETS = set(

@@ -15,4 +15,4 @@
 
 """This package contains different ML models."""
 
-from stacked_capsule_autoencoders.capsules.models.model import Model
+from capsules.models.model import Model

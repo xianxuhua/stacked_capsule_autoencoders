@@ -25,17 +25,17 @@ import tensorflow as tf
 
 
 def classification_probe(features, labels, n_classes, labeled=None):
-  """Classification probe with stopped gradient on features."""
+    """Classification probe with stopped gradient on features."""
 
-  def _classification_probe(features):
-    logits = snt.Linear(n_classes)(tf.stop_gradient(features))
-    xe = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits,
-                                                        labels=labels)
-    if labeled is not None:
-      xe = xe * tf.to_float(labeled)
-    xe = tf.reduce_mean(xe)
-    acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(logits, axis=1),
-                                              labels)))
-    return xe, acc
+    def _classification_probe(features):
+        logits = snt.Linear(n_classes)(tf.stop_gradient(features))
+        xe = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits,
+                                                            labels=labels)
+        if labeled is not None:
+            xe = xe * tf.to_float(labeled)
+        xe = tf.reduce_mean(xe)
+        acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(logits, axis=1),
+                                                  labels)))
+        return xe, acc
 
-  return snt.Module(_classification_probe)(features)
+    return snt.Module(_classification_probe)(features)
